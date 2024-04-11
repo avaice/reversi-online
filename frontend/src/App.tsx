@@ -4,8 +4,22 @@ import { useCallback, useEffect, useState } from "react"
 import { useRoomConnection } from "./modules/useRoomConnection"
 import { v4 } from "uuid"
 import { GameDataType } from "./types"
+import { Loading } from "./components/Loading/Loading"
 
 function App() {
+  return (
+    <>
+      <header>
+        <h1>
+          <img src="/logo.png" alt="オンラインリバーシ" width="250px" />
+        </h1>
+      </header>
+      <Main />
+    </>
+  )
+}
+
+const Main = () => {
   const [roomId, setRoomId] = useState<string | undefined>(undefined)
   const socket = useRoomConnection(roomId)
   const [gameState, setGameState] = useState<
@@ -105,87 +119,80 @@ function App() {
   }, [createRoom, roomId, socket])
 
   if (!socket) {
-    return <div>Connecting...</div>
+    return <Loading />
   }
 
   return (
-    <>
-      <header>
-        <h1>
-          <img src="/logo.png" alt="オンラインリバーシ" width="250px" />
-        </h1>
-      </header>
-      <main>
-        {gameState === "matchmaking" && (
-          <div className={styles.invite}>
-            <label>
-              <span className={styles.inviteMessage}>
-                対戦相手にURLを共有してください！
-              </span>
-              <div className={styles.copieableBox}>
-                <input type="text" readOnly value={getShareLink()} />
-                <button
-                  onClick={handleCopy}
-                  disabled={copyButtonText !== "コピー"}
-                >
-                  {copyButtonText}
-                </button>
-              </div>
-            </label>
-          </div>
-        )}
-        <p className={styles.information}>
-          {(() => {
-            switch (gameState) {
-              case "matchmaking":
-                return "対戦相手を待っています..."
-              case "playing": {
-                const turn = gameData?.turn === "black" ? "黒" : "白"
-                if (gameData?.user[gameData.turn] === socket.id) {
-                  return `あなたのターン(${turn})です`
-                }
-                return `相手のターン(${turn})です`
+    <main>
+      {gameState === "matchmaking" && (
+        <div className={styles.invite}>
+          <label>
+            <span className={styles.inviteMessage}>
+              対戦相手にURLを共有してください！
+            </span>
+            <div className={styles.copieableBox}>
+              <input type="text" readOnly value={getShareLink()} />
+              <button
+                onClick={handleCopy}
+                disabled={copyButtonText !== "コピー"}
+              >
+                {copyButtonText}
+              </button>
+            </div>
+          </label>
+        </div>
+      )}
+      <p className={styles.information}>
+        {(() => {
+          switch (gameState) {
+            case "matchmaking":
+              return "対戦相手を待っています..."
+            case "playing": {
+              const turn = gameData?.turn === "black" ? "黒" : "白"
+              if (gameData?.user[gameData.turn] === socket.id) {
+                return `あなたのターン(${turn})です`
               }
-              case "done": {
-                if (!result) return "不正なゲーム終了"
-                let winner = "draw"
-                const myColor =
-                  gameData?.user.black === socket.id ? "black" : "white"
-                if (result?.black > result?.white) {
-                  winner = "black"
-                } else if (result?.black < result?.white) {
-                  winner = "white"
-                }
-                if (winner == "draw") {
-                  return "ゲーム終了: 引き分け"
-                }
-                if (winner === myColor) {
-                  return "ゲーム終了: あなたの勝ち"
-                } else {
-                  return "ゲーム終了: あなたの負け"
-                }
-              }
-              case "leave":
-                return "相手が退出しました"
+              return `相手のターン(${turn})です`
             }
-          })()}
-        </p>
+            case "done": {
+              if (!result) return "不正なゲーム終了"
+              let winner = "draw"
+              const myColor =
+                gameData?.user.black === socket.id ? "black" : "white"
+              if (result?.black > result?.white) {
+                winner = "black"
+              } else if (result?.black < result?.white) {
+                winner = "white"
+              }
+              if (winner == "draw") {
+                return "ゲーム終了: 引き分け"
+              }
+              if (winner === myColor) {
+                return "ゲーム終了: あなたの勝ち"
+              } else {
+                return "ゲーム終了: あなたの負け"
+              }
+            }
+            case "leave":
+              return "相手が退出しました"
+          }
+        })()}
+      </p>
 
-        <ReversiBoard
-          gameData={gameData}
-          myUserId={socket.id}
-          onClickPiece={(x: number, y: number) => {
-            if (gameData?.user[gameData.turn] !== socket.id) {
-              return
-            }
-            socket.emit("put piece", { x, y })
-          }}
-        />
-        <button className={styles.passButton} onClick={handlePass}>
-          パス
-        </button>
-      </main>
-    </>
+      <ReversiBoard
+        gameData={gameData}
+        myUserId={socket.id}
+        onClickPiece={(x: number, y: number) => {
+          if (gameData?.user[gameData.turn] !== socket.id) {
+            return
+          }
+          socket.emit("put piece", { x, y })
+        }}
+      />
+      <button className={styles.passButton} onClick={handlePass}>
+        パス
+      </button>
+    </main>
   )
 }
 
