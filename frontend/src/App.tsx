@@ -23,8 +23,14 @@ const Main = () => {
   const [roomId, setRoomId] = useState<string | undefined>(undefined)
   const socket = useRoomConnection(roomId)
   const [gameState, setGameState] = useState<
-    "matchmaking" | "playing" | "done" | "leave"
-  >("matchmaking")
+    | "refused"
+    | "server_error"
+    | "init"
+    | "matchmaking"
+    | "playing"
+    | "done"
+    | "leave"
+  >("init")
   const [gameData, setGameData] = useState<GameDataType | undefined>()
   const [result, setResult] = useState<
     { black: number; white: number } | undefined
@@ -78,9 +84,14 @@ const Main = () => {
       return
     }
 
+    socket.on("connect_error", () => {
+      setGameState("refused")
+    })
+
     // 入室時の処理
     socket.on("joined room", (roomId: string) => {
       console.log(`joined room: ${roomId}`)
+      setGameState("matchmaking")
     })
     // 満室時の処理
     socket.on("full room", () => {
@@ -118,8 +129,18 @@ const Main = () => {
     })
   }, [createRoom, roomId, socket])
 
-  if (!socket) {
-    return <Loading />
+  if (gameState === "init" || !socket) {
+    return <Loading msg="接続中.." />
+  }
+
+  if (gameState === "refused") {
+    return (
+      <p className={styles.error}>
+        ゲームから切断されました。
+        <br />
+        電波の良好な場所で再度お試しください。
+      </p>
+    )
   }
 
   return (

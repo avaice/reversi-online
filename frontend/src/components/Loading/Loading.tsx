@@ -1,10 +1,10 @@
 import styles from "./Loading.module.css"
 
-export const Loading = () => {
+export const Loading = ({ msg }: { msg: string }) => {
   return (
     <div className={styles.loading}>
       <div className={styles.loadingSpinner} />
-      <p>接続中...</p>
+      <p>{msg}</p>
     </div>
   )
 }
