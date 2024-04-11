@@ -7,3 +7,13 @@ export type GameDataType = {
   }
   turn: "black" | "white"
 }
+
+export type GameStateType =
+  | "refused"
+  | "server_error"
+  | "init"
+  | "matchmaking"
+  | "playing"
+  | "done"
+  | "leave"
+  | "disconnected"

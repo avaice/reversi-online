@@ -1,4 +1,4 @@
-import { GameDataType, PieceType } from "../../types"
+import { GameDataType, PieceType } from "../../../../types"
 import styles from "./ReversiBoard.module.css"
 
 const createBoard = () => {

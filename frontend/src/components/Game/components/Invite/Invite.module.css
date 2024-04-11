@@ -45,36 +45,3 @@
   cursor: initial;
   opacity: 0.8;
 }
-
-.information {
-  text-align: center;
-  margin: 5px 0;
-  font-weight: bold;
-}
-
-.passButton {
-  transition: opacity 0.2s;
-  background-color: gray;
-  color: white;
-  border-radius: 8px;
-  padding: 5px 10px;
-  margin: 10px 0;
-  cursor: pointer;
-}
-.passButton:hover {
-  opacity: 0.8;
-}
-
-.error {
-  text-align: center;
-}
-
-.replay {
-  text-decoration: underline;
-  color: blue;
-  margin-left: 5px;
-}
-
-.reversiBoardWrapper {
-  position: relative;
-}
