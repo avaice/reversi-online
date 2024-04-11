@@ -27,7 +27,7 @@
   overflow: hidden;
 }
 .copieableBox button {
-  transition: opacity 0.2s;
+  transition: all 0.2s;
   background-color: rgb(25, 52, 9);
   color: white;
   border-radius: 0 8px 8px 0;
@@ -37,11 +37,15 @@
   flex-shrink: 0;
   cursor: pointer;
 }
-.copieableBox button:hover {
-  opacity: 0.8;
-}
+
 .copieableBox button:disabled {
-  background-color: gray;
+  background-color: black;
   cursor: initial;
   opacity: 0.8;
+}
+
+@media screen and (min-width: 500px) {
+  .copieableBox button:hover {
+    opacity: 0.8;
+  }
 }
