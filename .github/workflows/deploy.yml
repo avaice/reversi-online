@@ -1,0 +1,32 @@
+name: FTP Upload
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set VITE_BUILD_DATE
+        run: echo "VITE_BUILD_DATE=$(date)" >> frontend/.env
+
+      - name: Set VITE_SOCKET_URL
+        run: echo "VITE_SOCKET_URL=${{ secrets.SOCKIO_SERVER }}" >> frontend/.env
+
+      - name: Build Frontend
+        run: cd frontend && npm ci && npm run build
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./frontend/dist
+          server-dir: ./

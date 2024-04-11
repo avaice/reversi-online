@@ -15,6 +15,10 @@ function App() {
         </h1>
       </header>
       <Main />
+      <footer>
+        <p>build-date: {import.meta.env.VITE_BUILD_DATE || "unknown"}</p>
+        <p>(C)2024 online-reversi.xyz all rights reserved.</p>
+      </footer>
     </>
   )
 }
