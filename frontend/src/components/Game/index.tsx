@@ -7,6 +7,7 @@ import { useRoomConnection } from "../../modules/useRoomConnection"
 import { GameStateType, GameDataType } from "../../types"
 import { Invite } from "./components/Invite"
 import { printLog } from "../../modules/dev"
+import { ENV } from "../../modules/env"
 
 const getShareLink = (roomId: string) => {
   if (!roomId) {
@@ -184,7 +185,7 @@ export const Game = () => {
 
     const ping = setInterval(() => {
       if (socket?.connected && roomId) {
-        fetch(import.meta.env.VITE_API_URL + "/ping").catch(() => {
+        fetch(ENV.SOCKET_URL + "/ping").catch(() => {
           clearInterval(ping)
           setGameState("refused")
           setTimeout(() => {
