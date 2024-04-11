@@ -5,6 +5,7 @@ import { useRoomConnection } from "./modules/useRoomConnection"
 import { v4 } from "uuid"
 import { GameDataType } from "./types"
 import { Loading } from "./components/Loading/Loading"
+import { ENV } from "./modules/env"
 
 function App() {
   return (
@@ -16,7 +17,11 @@ function App() {
       </header>
       <Main />
       <footer>
-        <p>Build date: {import.meta.env.VITE_BUILD_DATE || "unknown"}</p>
+        {ENV.DEV_MODE ? (
+          <p>Development Mode</p>
+        ) : (
+          <p>Build Date: {ENV.BUILD_DATE}</p>
+        )}
         <p>(C)2024 online-reversi.xyz all rights reserved.</p>
       </footer>
     </>
@@ -148,15 +153,12 @@ const Main = () => {
 
     const ping = setInterval(() => {
       if (socket.connected) {
-        socket.timeout(5000).emit("ping", (err: any) => {
-          if (err) {
-            console.log(err)
-            clearInterval(ping)
-            setGameState("refused")
-            setTimeout(() => {
-              location.href = getShareLink()
-            }, 3000)
-          }
+        fetch(import.meta.env.VITE_API_URL + "/ping").catch(() => {
+          clearInterval(ping)
+          setGameState("refused")
+          setTimeout(() => {
+            location.href = getShareLink()
+          }, 3000)
         })
       }
     }, 5000)
@@ -172,7 +174,7 @@ const Main = () => {
       socket.off("message")
       clearInterval(ping)
     }
-  }, [createRoom, gameState, roomId, socket])
+  }, [createRoom, gameState, getShareLink, roomId, socket])
 
   if (gameState === "init" || !socket) {
     return <Loading msg="接続中.." />

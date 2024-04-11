@@ -31,6 +31,9 @@ app.use(apiLimiter)
 app.get("/", (req, res) => {
   res.send("Online Reversi Server")
 })
+app.get("/ping", (req, res) => {
+  res.send("pong")
+})
 
 //BASIC認証
 app.use(
