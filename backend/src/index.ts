@@ -1,9 +1,11 @@
 import express from "express"
 import { createServer } from "node:http"
 import { Server } from "socket.io"
-import { Reversi } from "./classes/Reversi"
 import rateLimit from "express-rate-limit"
 import { initIoEvents } from "./initIoEvents"
+import { configDotenv } from "dotenv"
+
+configDotenv()
 
 const app = express()
 const server = createServer(app)
