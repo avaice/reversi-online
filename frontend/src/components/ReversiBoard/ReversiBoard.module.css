@@ -1,0 +1,47 @@
+.board {
+  display: flex;
+  position: relative;
+  width: calc(100% - 4px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border: solid 2px black;
+  flex-wrap: wrap;
+  background-color: rgb(240, 240, 240);
+}
+.piece {
+  transition: background-color 0.2s;
+  position: relative;
+  display: block;
+  width: calc(100% / 8);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  border: solid 0.5px rgba(0, 0, 0, 0.4);
+}
+
+.black::after,
+.white::after {
+  top: 0;
+  left: 0;
+  position: absolute;
+  content: "";
+  margin: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  border-radius: 50%;
+  /* border: solid 1px black; */
+  box-shadow: 0 0 4px gray;
+}
+.black::after {
+  background-color: black;
+}
+.white::after {
+  background-color: white;
+}
+
+@media screen and (min-width: 501px) {
+  .empty:hover {
+    background-color: rgb(200, 200, 200);
+    cursor: pointer;
+  }
+}
