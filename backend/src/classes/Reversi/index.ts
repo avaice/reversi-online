@@ -1,17 +1,19 @@
 type PieceType = "black" | "white" | null
 type UserType = { black: string; white: string }
 
+const newBoard = () => {
+  const board: PieceType[][] = Array.from({ length: 8 }, () =>
+    Array(8).fill(null)
+  )
+  board[3][3] = "white"
+  board[3][4] = "black"
+  board[4][3] = "black"
+  board[4][4] = "white"
+  return board
+}
+
 export class Reversi {
-  private board = (() => {
-    const board: PieceType[][] = Array.from({ length: 8 }, () =>
-      Array(8).fill(null)
-    )
-    board[3][3] = "white"
-    board[3][4] = "black"
-    board[4][3] = "black"
-    board[4][4] = "white"
-    return board
-  })()
+  private board = newBoard()
   private user: UserType | null = null
   private turn: "black" | "white" = "black"
 
@@ -29,6 +31,13 @@ export class Reversi {
     return this.user
   }
 
+  updateUser(id: string, role: "black" | "white") {
+    if (this.user === null) {
+      return
+    }
+    this.user[role] = id
+  }
+
   pass() {
     if (this.hasPuttablePlace()) {
       return false
@@ -38,10 +47,10 @@ export class Reversi {
     return true
   }
 
-  hasPuttablePlace() {
+  hasPuttablePlace(role: "black" | "white" = this.turn) {
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
-        if (this.canPutPiece(x, y, this.turn === "black" ? "black" : "white")) {
+        if (this.canPutPiece(x, y, role)) {
           return true
         }
       }
@@ -139,5 +148,10 @@ export class Reversi {
       })
     })
     return { black, white }
+  }
+
+  reset() {
+    this.board = newBoard()
+    this.turn = "black"
   }
 }

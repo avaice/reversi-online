@@ -32,15 +32,30 @@ export const initIoEvents = (io: Server) => {
 
       // もし入室者が２人ならゲームを開始
       if (room && room.size === 2) {
-        const reversi = new Reversi({
-          black: Array.from(room)[0],
-          white: Array.from(room)[1],
-        })
-        BoardList.set(roomId, reversi)
-        sendBoard(roomId, reversi)
-        serverLog(`create board: ${roomId}`)
+        if (!BoardList.has(roomId)) {
+          // ボードがなければ新規
+          const reversi = new Reversi({
+            black: Array.from(room)[0],
+            white: Array.from(room)[1],
+          })
+          BoardList.set(roomId, reversi)
+          sendBoard(roomId, reversi)
+          serverLog(`create board: ${roomId}`)
+        } else {
+          // あれば再開
+          const reversi = BoardList.get(roomId)!
+          if (reversi.getUser()!.black === Array.from(room)[0]) {
+            reversi.updateUser(Array.from(room)[1], "white")
+          } else {
+            reversi.updateUser(Array.from(room)[1], "black")
+          }
+
+          sendBoard(roomId, reversi)
+          serverLog(`resume game: ${roomId}`)
+        }
       }
     })
+    // ピースを置く
     socket.on("put piece", ({ x, y }: { x: number; y: number }) => {
       const roomId = joinedRoomList.get(socket.id)
       if (!roomId) {
@@ -56,7 +71,9 @@ export const initIoEvents = (io: Server) => {
         if (
           flatBoard.filter((piece) => piece === null).length === 0 ||
           flatBoard.filter((piece) => piece === "black").length === 0 ||
-          flatBoard.filter((piece) => piece === "white").length === 0
+          flatBoard.filter((piece) => piece === "white").length === 0 ||
+          (!reversi.hasPuttablePlace("black") &&
+            !reversi.hasPuttablePlace("white"))
         ) {
           io.to(roomId).emit("result", reversi.count())
         }
@@ -64,6 +81,7 @@ export const initIoEvents = (io: Server) => {
         socket.emit("message", "can't put piece")
       }
     })
+    // パスする
     socket.on("pass", () => {
       const roomId = joinedRoomList.get(socket.id)
       if (!roomId) {
@@ -83,6 +101,19 @@ export const initIoEvents = (io: Server) => {
         socket.emit("message", "can't pass")
       }
     })
+    // 再戦する
+    socket.on("replay", () => {
+      const roomId = joinedRoomList.get(socket.id)
+      if (!roomId) {
+        return
+      }
+      const reversi = BoardList.get(roomId)
+      if (!reversi) {
+        return
+      }
+      reversi.reset()
+      sendBoard(roomId, reversi)
+    })
 
     // ルームから誰かが退室した時
     socket.on("disconnect", () => {
@@ -93,8 +124,8 @@ export const initIoEvents = (io: Server) => {
       }
       joinedRoomList.delete(socket.id)
 
-      // ボードがあったら削除する
-      if (joinedRoom && BoardList.has(joinedRoom)) {
+      // 消失した部屋のボードは削除する
+      if (joinedRoom && !io.sockets.adapter.rooms.get(joinedRoom)) {
         serverLog(`delete board: ${joinedRoom}`)
         BoardList.delete(joinedRoom)
       }

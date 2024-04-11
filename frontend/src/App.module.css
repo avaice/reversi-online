@@ -68,3 +68,13 @@
 .error {
   text-align: center;
 }
+
+.replay {
+  text-decoration: underline;
+  color: blue;
+  margin-left: 5px;
+}
+
+.reversiBoardWrapper {
+  position: relative;
+}

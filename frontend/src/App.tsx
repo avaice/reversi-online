@@ -34,6 +34,7 @@ const Main = () => {
     | "playing"
     | "done"
     | "leave"
+    | "disconnected"
   >("init")
   const [gameData, setGameData] = useState<GameDataType | undefined>()
   const [result, setResult] = useState<
@@ -74,6 +75,15 @@ const Main = () => {
     })
   }, [getShareLink])
 
+  const handleReplay = useCallback(() => {
+    if (!socket) {
+      return
+    }
+    setGameState("playing")
+    // リプレイ要求
+    socket.emit("replay")
+  }, [socket])
+
   useEffect(() => {
     if (!roomId) {
       //URLパラメータのroomIdを取得
@@ -89,6 +99,10 @@ const Main = () => {
     }
 
     socket.on("connect_error", () => {
+      if (gameState === "init") {
+        setGameState("server_error")
+        return
+      }
       setGameState("refused")
     })
 
@@ -102,24 +116,24 @@ const Main = () => {
       alert("このルームは他の人たちがプレイ中です。新しいルームを作成します。")
       createRoom()
     })
-    // 他のユーザーが退室した時の処理
+    // 他のユーザーの接続が途切れた時
     socket.on("opponent disconnected", () => {
-      // alert("相手が退出しました")
-      setGameState("leave")
-      // 接続を切断
-      socket.disconnect()
+      if (gameState === "done") {
+        setGameState("leave")
+        socket.disconnect()
+      } else {
+        setGameState("disconnected")
+      }
     })
 
     // 盤面の更新
     socket.on("board update", (data: GameDataType) => {
-      console.log(data)
       setGameState("playing")
       setGameData(data)
     })
 
-    // 盤面の更新
+    // ゲーム終了時
     socket.on("result", (data: { black: number; white: number }) => {
-      console.log(data)
       setGameState("done")
       setResult(data)
     })
@@ -131,20 +145,34 @@ const Main = () => {
         alert("置く場所があるので、パスできません")
       }
     })
-  }, [createRoom, roomId, socket])
+
+    return () => {
+      // socketのイベントリスナーを削除
+      socket.off("connect_error")
+      socket.off("joined room")
+      socket.off("full room")
+      socket.off("opponent disconnected")
+      socket.off("board update")
+      socket.off("result")
+      socket.off("message")
+    }
+  }, [createRoom, gameState, roomId, socket])
 
   if (gameState === "init" || !socket) {
     return <Loading msg="接続中.." />
   }
 
-  if (gameState === "refused") {
+  if (gameState === "server_error") {
     return (
       <p className={styles.error}>
-        ゲームから切断されました。
+        サーバーと接続できませんでした。
         <br />
-        電波の良好な場所で再度お試しください。
+        時間をおいて、再度お試しください。
       </p>
     )
+  }
+  if (gameState === "refused") {
+    return <Loading msg="ゲームから切断されました。再接続中.." />
   }
 
   return (
@@ -172,7 +200,8 @@ const Main = () => {
           switch (gameState) {
             case "matchmaking":
               return "対戦相手を待っています..."
-            case "playing": {
+            case "playing":
+            case "disconnected": {
               const turn = gameData?.turn === "black" ? "黒" : "白"
               if (gameData?.user[gameData.turn] === socket.id) {
                 return `あなたのターン(${turn})です`
@@ -199,21 +228,34 @@ const Main = () => {
               }
             }
             case "leave":
-              return "相手が退出しました"
+              return "相手が退室しました"
           }
         })()}
+        {gameState === "done" && (
+          <button className={styles.replay} onClick={handleReplay}>
+            再戦する
+          </button>
+        )}
       </p>
 
-      <ReversiBoard
-        gameData={gameData}
-        myUserId={socket.id}
-        onClickPiece={(x: number, y: number) => {
-          if (gameData?.user[gameData.turn] !== socket.id) {
-            return
-          }
-          socket.emit("put piece", { x, y })
-        }}
-      />
+      <div className={styles.reversiBoardWrapper}>
+        <ReversiBoard
+          gameData={gameData}
+          myUserId={socket.id}
+          onClickPiece={(x: number, y: number) => {
+            if (gameState !== "playing") {
+              return
+            }
+            if (gameData?.user[gameData.turn] !== socket.id) {
+              return
+            }
+            socket.emit("put piece", { x, y })
+          }}
+        />
+        {gameState === "disconnected" && (
+          <Loading msg="相手の通信が不安定です" fill />
+        )}
+      </div>
       <button className={styles.passButton} onClick={handlePass}>
         パス
       </button>
