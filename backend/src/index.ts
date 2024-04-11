@@ -6,6 +6,7 @@ import { initIoEvents } from "./initIoEvents"
 
 import basicAuth from "express-basic-auth"
 import { ENV } from "./modules/env"
+import cors from "cors"
 
 const app = express()
 const server = createServer(app)
@@ -24,6 +25,8 @@ app.use(apiLimiter)
 app.get("/", (req, res) => {
   res.send("Online Reversi Server")
 })
+
+app.use("/ping", cors())
 app.get("/ping", (req, res) => {
   res.send("pong")
 })
