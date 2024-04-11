@@ -6,19 +6,15 @@ import { initIoEvents } from "./initIoEvents"
 import { configDotenv } from "dotenv"
 
 import basicAuth from "express-basic-auth"
+import { ENV } from "./modules/env"
 
 configDotenv()
-
-if (!process.env.BASIC_AUTH_USER || !process.env.BASIC_AUTH_PASS) {
-  console.error("BASIC_AUTH_USER or BASIC_AUTH_PASS is not set")
-  process.exit(1)
-}
 
 const app = express()
 const server = createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: ENV.CORS_ORIGIN,
   },
 })
 
@@ -39,7 +35,7 @@ app.get("/ping", (req, res) => {
 app.use(
   "/logs",
   basicAuth({
-    users: { [process.env.BASIC_AUTH_USER]: process.env.BASIC_AUTH_PASS },
+    users: { [ENV.BASIC_AUTH_USER]: ENV.BASIC_AUTH_PASS },
     challenge: true,
   })
 )
