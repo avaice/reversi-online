@@ -28,7 +28,7 @@ app.get("/ping", (req, res) => {
   res.send("pong")
 })
 
-//BASIC認証
+// BASIC認証
 app.use(
   "/logs",
   basicAuth({
@@ -36,6 +36,7 @@ app.use(
     challenge: true,
   })
 )
+// サーバーログ
 app.get("/logs", (req, res) => {
   // ../log.txtを表示
   res.sendFile("log.txt", { root: __dirname + "/../" })
