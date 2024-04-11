@@ -146,6 +146,21 @@ const Main = () => {
       }
     })
 
+    const ping = setInterval(() => {
+      if (socket.connected) {
+        socket.timeout(5000).emit("ping", (err: any) => {
+          if (err) {
+            console.log(err)
+            clearInterval(ping)
+            setGameState("refused")
+            setTimeout(() => {
+              location.href = getShareLink()
+            }, 3000)
+          }
+        })
+      }
+    }, 5000)
+
     return () => {
       // socketのイベントリスナーを削除
       socket.off("connect_error")
@@ -155,6 +170,7 @@ const Main = () => {
       socket.off("board update")
       socket.off("result")
       socket.off("message")
+      clearInterval(ping)
     }
   }, [createRoom, gameState, roomId, socket])
 
@@ -258,6 +274,13 @@ const Main = () => {
       </div>
       <button className={styles.passButton} onClick={handlePass}>
         パス
+      </button>
+      <button
+        onClick={() => {
+          console.log(socket.connected)
+        }}
+      >
+        接続状態
       </button>
     </main>
   )

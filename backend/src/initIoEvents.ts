@@ -15,6 +15,10 @@ export const initIoEvents = (io: Server) => {
   }
 
   io.on("connection", (socket) => {
+    // ping
+    socket.on("ping", () => {
+      socket.emit("pong")
+    })
     // ルームに入室する
     socket.on("join room", (roomId) => {
       serverLog(`join room: ${roomId}`)
