@@ -2,6 +2,7 @@ import express from "express"
 import { createServer } from "node:http"
 import { Server } from "socket.io"
 import { Reversi } from "./classes/Reversi"
+import rateLimit from "express-rate-limit"
 
 const joinedRoomList = new Map<string, string>()
 const BoardList = new Map<string, Reversi>()
@@ -13,6 +14,12 @@ const io = new Server(server, {
     origin: "*",
   },
 })
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 200,
+})
+app.use(apiLimiter)
 
 app.get("/", (req, res) => {
   res.send("Online Reversi Server")
