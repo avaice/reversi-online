@@ -40,7 +40,7 @@
 }
 
 @media screen and (min-width: 501px) {
-  .empty:hover {
+  .empty:not(:disabled):hover {
     background-color: rgb(200, 200, 200);
     cursor: pointer;
   }

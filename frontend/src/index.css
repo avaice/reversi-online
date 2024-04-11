@@ -1,4 +1,9 @@
+html {
+  background-color: antiquewhite;
+}
+
 body {
+  font-family: sans-serif;
   max-width: 500px;
   margin: 0 auto;
   padding: 0 10px;

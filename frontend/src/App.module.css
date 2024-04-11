@@ -5,7 +5,8 @@
   border-radius: 10px;
   padding: 15px;
   margin: 10px 0;
-  background-color: rgb(240, 240, 240);
+  background-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 .invite label {
   width: 100%;
@@ -26,17 +27,40 @@
   overflow: hidden;
 }
 .copieableBox button {
-  background-color: green;
+  transition: opacity 0.2s;
+  background-color: rgb(25, 52, 9);
   color: white;
   border-radius: 0 8px 8px 0;
   width: 70px;
   padding: 0 10px;
   text-align: center;
   flex-shrink: 0;
+  cursor: pointer;
+}
+.copieableBox button:hover {
+  opacity: 0.8;
+}
+.copieableBox button:disabled {
+  background-color: gray;
+  cursor: initial;
+  opacity: 0.8;
 }
 
 .information {
   text-align: center;
   margin: 5px 0;
   font-weight: bold;
+}
+
+.passButton {
+  transition: opacity 0.2s;
+  background-color: gray;
+  color: white;
+  border-radius: 8px;
+  padding: 5px 10px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+.passButton:hover {
+  opacity: 0.8;
 }
