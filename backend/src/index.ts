@@ -3,12 +3,9 @@ import { createServer } from "node:http"
 import { Server } from "socket.io"
 import rateLimit from "express-rate-limit"
 import { initIoEvents } from "./initIoEvents"
-import { configDotenv } from "dotenv"
 
 import basicAuth from "express-basic-auth"
 import { ENV } from "./modules/env"
-
-configDotenv()
 
 const app = express()
 const server = createServer(app)
@@ -46,6 +43,6 @@ app.get("/logs", (req, res) => {
 
 initIoEvents(io)
 
-server.listen(3000, () => {
-  console.log("server running at http://localhost:3000")
+server.listen(ENV.PORT, () => {
+  console.log(`server running at http://localhost:${ENV.PORT}`)
 })
