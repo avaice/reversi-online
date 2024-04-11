@@ -1,5 +1,6 @@
 import { Server } from "socket.io"
 import { Reversi } from "./classes/Reversi"
+import { serverLog } from "./serverLog"
 
 const joinedRoomList = new Map<string, string>()
 const BoardList = new Map<string, Reversi>()
@@ -16,7 +17,7 @@ export const initIoEvents = (io: Server) => {
   io.on("connection", (socket) => {
     // ルームに入室する
     socket.on("join room", (roomId) => {
-      console.log(`join room: ${roomId}`)
+      serverLog(`join room: ${roomId}`)
       // もし部屋に２名以上いたら入室できない
       const room = io.sockets.adapter.rooms.get(roomId)
       if (room && room.size >= 2) {
@@ -37,6 +38,7 @@ export const initIoEvents = (io: Server) => {
         })
         BoardList.set(roomId, reversi)
         sendBoard(roomId, reversi)
+        serverLog(`create board: ${roomId}`)
       }
     })
     socket.on("put piece", ({ x, y }: { x: number; y: number }) => {
@@ -84,7 +86,7 @@ export const initIoEvents = (io: Server) => {
 
     // ルームから誰かが退室した時
     socket.on("disconnect", () => {
-      console.log("ユーザーが切断されました")
+      serverLog(`disconnect: ${socket.id}`)
       const joinedRoom = joinedRoomList.get(socket.id)
       if (joinedRoom) {
         socket.to(joinedRoom).emit("opponent disconnected")
@@ -93,6 +95,7 @@ export const initIoEvents = (io: Server) => {
 
       // ボードがあったら削除する
       if (joinedRoom && BoardList.has(joinedRoom)) {
+        serverLog(`delete board: ${joinedRoom}`)
         BoardList.delete(joinedRoom)
       }
     })
