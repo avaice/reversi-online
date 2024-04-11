@@ -2,7 +2,7 @@ import express from "express"
 import { createServer } from "node:http"
 import { Server } from "socket.io"
 import rateLimit from "express-rate-limit"
-import { initIoEvents } from "./initIoEvents"
+import { BoardList, initIoEvents } from "./initIoEvents"
 
 import basicAuth from "express-basic-auth"
 import { ENV } from "./modules/env"
@@ -31,18 +31,40 @@ app.get("/ping", (req, res) => {
   res.send("pong")
 })
 
-// BASIC認証
+// logs, healthをBASIC認証
 app.use(
-  "/logs",
+  "/admin/*",
   basicAuth({
     users: { [ENV.BASIC_AUTH_USER]: ENV.BASIC_AUTH_PASS },
     challenge: true,
   })
 )
 // サーバーログ
-app.get("/logs", (req, res) => {
+app.get("/admin/logs", (req, res) => {
   // ../log.txtを表示
   res.sendFile("log.txt", { root: __dirname + "/../" })
+})
+
+// ヘルスチェック
+app.get("/admin/health", (req, res) => {
+  res.json({
+    date: new Date().toISOString(),
+    status: "ok",
+    connections: io.engine.clientsCount,
+    roomCount: io.sockets.adapter.rooms.size,
+    boardCount: BoardList.size,
+    server: {
+      usage: {
+        // CPU使用量(.00%) 小数点以下2桁
+        cpu: (process.cpuUsage().system / 1000 / 1000).toFixed(2),
+        // メモリ使用量(.00%) 小数点以下2桁
+        memory: (
+          (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) *
+          100
+        ).toFixed(2),
+      },
+    },
+  })
 })
 
 initIoEvents(io)

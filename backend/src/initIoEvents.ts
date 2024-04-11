@@ -3,7 +3,7 @@ import { Reversi } from "./classes/Reversi"
 import { serverLog } from "./serverLog"
 
 const joinedRoomList = new Map<string, string>()
-const BoardList = new Map<string, Reversi>()
+export const BoardList = new Map<string, Reversi>()
 
 export const initIoEvents = (io: Server) => {
   const sendBoard = (roomId: string, reversi: Reversi) => {
