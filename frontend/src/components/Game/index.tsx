@@ -8,6 +8,18 @@ import { GameStateType, GameDataType } from "../../types"
 import { Invite } from "./components/Invite"
 import { printLog } from "../../modules/dev"
 
+const getShareLink = (roomId: string) => {
+  if (!roomId) {
+    return ""
+  }
+  const url = new URL(window.location.href)
+  // 余計なパラメータを削除
+  url.search = ""
+
+  url.searchParams.set("roomId", roomId)
+  return url.toString()
+}
+
 export const Game = () => {
   const [roomId, setRoomId] = useState<string | undefined>(undefined)
   const socket = useRoomConnection(roomId)
@@ -27,18 +39,6 @@ export const Game = () => {
     }
     socket.emit("pass")
   }, [socket])
-
-  const getShareLink = useCallback(() => {
-    if (!roomId) {
-      return ""
-    }
-    const url = new URL(window.location.href)
-    // 余計なパラメータを削除
-    url.search = ""
-
-    url.searchParams.set("roomId", roomId)
-    return url.toString()
-  }, [roomId])
 
   const handleReplay = useCallback(() => {
     if (!socket) {
@@ -183,12 +183,12 @@ export const Game = () => {
     describeEvents()
 
     const ping = setInterval(() => {
-      if (socket?.connected) {
+      if (socket?.connected && roomId) {
         fetch(import.meta.env.VITE_API_URL + "/ping").catch(() => {
           clearInterval(ping)
           setGameState("refused")
           setTimeout(() => {
-            location.href = getShareLink()
+            location.href = getShareLink(roomId)
           }, 3000)
         })
       }
@@ -198,17 +198,9 @@ export const Game = () => {
       unDescribeEvents()
       clearInterval(ping)
     }
-  }, [
-    createRoom,
-    describeEvents,
-    gameState,
-    getShareLink,
-    roomId,
-    socket,
-    unDescribeEvents,
-  ])
+  }, [createRoom, describeEvents, gameState, roomId, socket, unDescribeEvents])
 
-  if (gameState === "init" || !socket) {
+  if (gameState === "init" || !socket || !roomId) {
     return <Loading msg="接続中.." />
   }
 
@@ -227,7 +219,9 @@ export const Game = () => {
 
   return (
     <main>
-      {gameState === "matchmaking" && <Invite shareLink={getShareLink()} />}
+      {gameState === "matchmaking" && (
+        <Invite shareLink={getShareLink(roomId)} />
+      )}
       <p className={styles.information}>
         {gameInformation}
         {gameState === "done" && (
