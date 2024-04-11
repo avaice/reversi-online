@@ -104,7 +104,7 @@ const Main = () => {
     })
     // 他のユーザーが退室した時の処理
     socket.on("opponent disconnected", () => {
-      alert("相手が退出しました")
+      // alert("相手が退出しました")
       setGameState("leave")
       // 接続を切断
       socket.disconnect()
