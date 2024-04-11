@@ -6,6 +6,7 @@ import { ReversiBoard } from "./components/ReversiBoard"
 import { useRoomConnection } from "../../modules/useRoomConnection"
 import { GameStateType, GameDataType } from "../../types"
 import { Invite } from "./components/Invite"
+import { printLog } from "../../modules/dev"
 
 export const Game = () => {
   const [roomId, setRoomId] = useState<string | undefined>(undefined)
@@ -79,7 +80,7 @@ export const Game = () => {
 
     // 入室時の処理
     socket.on("joined room", (roomId: string) => {
-      console.log(`joined room: ${roomId}`)
+      printLog(`joined room: ${roomId}`)
       setGameState("matchmaking")
     })
     // 満室時の処理
@@ -111,7 +112,7 @@ export const Game = () => {
 
     // メッセージの受信時
     socket.on("message", (message: string) => {
-      console.log(message)
+      printLog(message)
       if (message === "can't pass") {
         alert("置く場所があるので、パスできません")
       }
