@@ -19,6 +19,11 @@
   height: auto;
 }
 
+.piece:focus-visible {
+  outline: solid 4px orange;
+  outline: solid 4px -webkit-focus-ring-color;
+}
+
 .black::after,
 .white::after {
   position: absolute;

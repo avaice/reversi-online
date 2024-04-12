@@ -22,3 +22,8 @@ footer {
   font-size: 14px;
   text-align: center;
 }
+
+button:focus-visible {
+  outline: solid 2px orange;
+  outline: solid 2px -webkit-focus-ring-color;
+}

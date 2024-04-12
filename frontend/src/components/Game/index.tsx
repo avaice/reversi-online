@@ -227,7 +227,7 @@ export const Game = () => {
   return (
     <main>
       {gameState === 'matchmaking' && <Invite shareLink={getShareLink(roomId)} />}
-      <p className={styles.information}>
+      <p className={styles.information} aria-live="polite">
         {gameInformation}
         {gameState === 'done' && (
           <button className={styles.replay} onClick={handleReplay}>
