@@ -15,7 +15,7 @@ npm run dev
 
 ### Enviroment Variables
 
-See [env.ts](frontend/src/modules/env.ts) & index.html
+See [env.ts](frontend/src/modules/env.ts) & [index.html](frontend/index.html)
 
 ## Backend
 
