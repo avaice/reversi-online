@@ -48,6 +48,7 @@ if (!ENV.DEV) {
 }
 
 app.get('/', (req, res) => {
+  throw new Error('test');
   res.send('Online Reversi Server');
 });
 
