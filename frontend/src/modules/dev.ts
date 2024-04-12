@@ -1,8 +1,8 @@
-import { ENV } from "./env"
+import { ENV } from './env';
 
 export const printLog = (message?: unknown) => {
   if (!ENV.DEV_MODE) {
-    return
+    return;
   }
-  console.log(`[DEV] ${message}`)
-}
+  console.log(`[DEV] ${message}`);
+};

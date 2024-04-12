@@ -1,19 +1,19 @@
-export type PieceType = "black" | "white" | null
+export type PieceType = 'black' | 'white' | null;
 export type GameDataType = {
-  board: PieceType[][]
+  board: PieceType[][];
   user: {
-    black: string
-    white: string
-  }
-  turn: "black" | "white"
-}
+    black: string;
+    white: string;
+  };
+  turn: 'black' | 'white';
+};
 
 export type GameStateType =
-  | "refused"
-  | "server_error"
-  | "init"
-  | "matchmaking"
-  | "playing"
-  | "done"
-  | "leave"
-  | "disconnected"
+  | 'refused'
+  | 'server_error'
+  | 'init'
+  | 'matchmaking'
+  | 'playing'
+  | 'done'
+  | 'leave'
+  | 'disconnected';

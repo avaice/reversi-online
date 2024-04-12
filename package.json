@@ -1,0 +1,15 @@
+{
+  "name": "reversi-online",
+  "version": "1.0.0",
+  "description": "Simple Online Reversi Game made with Socket.IO!",
+  "main": "index.js",
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  },
+  "scripts": {
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

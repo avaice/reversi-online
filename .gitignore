@@ -2,3 +2,4 @@ frontend/.env
 .DS_Store
 backend/.env
 backend/log.txt
+node_modules/
