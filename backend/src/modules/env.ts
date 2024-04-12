@@ -12,4 +12,6 @@ export const ENV = {
   BASIC_AUTH_USER: process.env.BASIC_AUTH_USER!,
   BASIC_AUTH_PASS: process.env.BASIC_AUTH_PASS!,
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+  SENTRY_DSN: process.env.SENTRY_DSN,
+  DEV: !!process.env.DEV,
 } as const;
