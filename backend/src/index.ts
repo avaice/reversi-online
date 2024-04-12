@@ -3,12 +3,10 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import rateLimit from 'express-rate-limit';
 import { BoardList, initIoEvents } from './initIoEvents';
-import * as Sentry from '@sentry/node';
 
 import basicAuth from 'express-basic-auth';
 import { ENV } from './modules/env';
 import cors from 'cors';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 const app = express();
 const server = createServer(app);
