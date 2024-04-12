@@ -105,12 +105,14 @@ export const Game = () => {
     // 盤面の更新
     socket.on('board update', (data: GameDataType) => {
       setGameState('playing');
+      localStorage.setItem('playing_room', roomId!);
       setGameData(data);
     });
 
     // ゲーム終了時
     socket.on('result', (data: { black: number; white: number }) => {
       setGameState('done');
+      localStorage.removeItem('playing_room');
       setResult(data);
     });
 
@@ -121,7 +123,7 @@ export const Game = () => {
         alert('置く場所があるので、パスできません');
       }
     });
-  }, [createRoom, gameState, socket]);
+  }, [createRoom, gameState, roomId, socket]);
 
   const unDescribeEvents = useCallback(() => {
     if (!socket) {
@@ -181,8 +183,9 @@ export const Game = () => {
     if (!roomId) {
       //URLパラメータのroomIdを取得
       const searchParams = new URLSearchParams(window.location.search);
-      const _roomId = searchParams.get('roomId');
-      createRoom(_roomId ?? undefined);
+      const _roomId =
+        searchParams.get('roomId') ?? localStorage.getItem('playing_room') ?? undefined;
+      createRoom(_roomId);
       // パラメータを削除
       window.history.replaceState(null, '', window.location.pathname);
     }
