@@ -22,6 +22,12 @@ jobs:
       - name: Set VITE_SOCKET_URL
         run: echo "VITE_SOCKET_URL=${{ secrets.SOCKIO_SERVER }}" >> frontend/.env
 
+      - name: Set VITE_PUBLIC_URL
+        run: echo "VITE_PUBLIC_URL=${{ secrets.PUBLIC_URL }}" >> frontend/.env
+
+      - name: Set VITE_ADSENSE_CLIENT
+        run: echo "VITE_ADSENSE_CLIENT=${{ secrets.ADSENSE_CLIENT }}" >> frontend/.env
+
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
 
