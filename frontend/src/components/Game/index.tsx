@@ -247,13 +247,16 @@ export const Game = () => {
           </button>
         )}
       </p>
-
       <div className={styles.reversiBoardWrapper}>
         <ReversiBoard gameData={gameData} myUserId={socket.id} onClickPiece={onClickPiece} />
         {gameState === 'disconnected' && <Loading msg="相手の通信が不安定です" fill />}
       </div>
-      <button className={styles.passButton} onClick={handlePass}>
-        パス
+      <button
+        className={styles.passButton}
+        onClick={handlePass}
+        disabled={!(gameData?.user[gameData.turn] === socket.id)}
+      >
+        パスする
       </button>
     </main>
   );
