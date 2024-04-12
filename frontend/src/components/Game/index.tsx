@@ -8,6 +8,7 @@ import { GameStateType, GameDataType } from '../../types';
 import { Invite } from './components/Invite';
 import { printLog } from '../../modules/dev';
 import { ENV } from '../../modules/env';
+import { captureException } from '@sentry/react';
 
 const getShareLink = (roomId: string) => {
   if (!roomId) {
@@ -72,6 +73,10 @@ export const Game = () => {
     socket.on('connect_error', () => {
       if (gameState === 'init') {
         setGameState('server_error');
+        captureException(new Error('connect_error in init state'));
+        return;
+      }
+      if (gameState === 'server_error') {
         return;
       }
       setGameState('refused');
@@ -147,7 +152,10 @@ export const Game = () => {
         return `相手のターン(${turn})です`;
       }
       case 'done': {
-        if (!result) return '不正なゲーム終了';
+        if (!result) {
+          captureException(new Error('unexpected result in done state'));
+          return '不正なゲーム終了';
+        }
         let winner = 'draw';
         const myColor = gameData?.user.black === socket.id ? 'black' : 'white';
         if (result?.black > result?.white) {
