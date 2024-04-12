@@ -33,6 +33,9 @@ jobs:
       - name: Set VITE_SENTRY_DSN
         run: echo "VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> frontend/.env
 
+      - name: Set SENTRY_AUTH_TOKEN
+        run: echo "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}" >> frontend/.env
+
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
 
