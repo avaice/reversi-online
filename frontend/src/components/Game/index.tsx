@@ -204,7 +204,16 @@ export const Game = () => {
       }
     }, 5000);
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        socket?.connect();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       unDescribeEvents();
       clearInterval(ping);
     };
