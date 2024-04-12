@@ -1,17 +1,17 @@
 .information {
-  text-align: center;
   margin: 5px 0;
   font-weight: bold;
+  text-align: center;
 }
 
 .passButton {
   transition: opacity 0.2s;
-  background-color: gray;
-  color: white;
-  border-radius: 8px;
-  padding: 5px 10px;
-  margin: 10px 0;
   cursor: pointer;
+  margin: 10px 0;
+  border-radius: 8px;
+  background-color: gray;
+  padding: 5px 10px;
+  color: white;
 }
 .passButton:hover {
   opacity: 0.8;
@@ -22,9 +22,9 @@
 }
 
 .replay {
-  text-decoration: underline;
-  color: blue;
   margin-left: 5px;
+  color: blue;
+  text-decoration: underline;
 }
 
 .reversiBoardWrapper {

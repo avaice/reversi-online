@@ -2,11 +2,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
-  padding: 15px;
   margin: 10px 0;
-  background-color: rgba(0, 0, 0, 0.1);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 15px;
 }
 .invite label {
   width: 100%;
@@ -17,31 +17,31 @@
 .copieableBox {
   display: flex;
   justify-content: space-between;
-  background-color: white;
-  border-radius: 8px;
   margin-top: 10px;
+  border-radius: 8px;
+  background-color: white;
 }
 .copieableBox input {
-  padding: 5px 10px;
   flex-grow: 1;
+  padding: 5px 10px;
   overflow: hidden;
 }
 .copieableBox button {
-  transition: all 0.2s;
-  background-color: rgb(25, 52, 9);
-  color: white;
-  border-radius: 0 8px 8px 0;
-  width: 70px;
-  padding: 0 10px;
-  text-align: center;
   flex-shrink: 0;
+  transition: all 0.2s;
   cursor: pointer;
+  border-radius: 0 8px 8px 0;
+  background-color: rgb(25, 52, 9);
+  padding: 0 10px;
+  width: 70px;
+  color: white;
+  text-align: center;
 }
 
 .copieableBox button:disabled {
-  background-color: black;
-  cursor: initial;
   opacity: 0.8;
+  cursor: initial;
+  background-color: black;
 }
 
 @media screen and (min-width: 500px) {

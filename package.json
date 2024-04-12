@@ -4,7 +4,8 @@
   "description": "Simple Online Reversi Game made with Socket.IO!",
   "main": "index.js",
   "devDependencies": {
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "prettier-plugin-css-order": "^2.1.2"
   },
   "scripts": {
     "format": "prettier --write ."
