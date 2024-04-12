@@ -3,3 +3,4 @@ frontend/.env
 backend/.env
 backend/log.txt
 node_modules/
+frontend/stats.html
