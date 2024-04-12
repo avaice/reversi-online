@@ -28,6 +28,9 @@ jobs:
       - name: Set VITE_ADSENSE_CLIENT
         run: echo "VITE_ADSENSE_CLIENT=${{ secrets.ADSENSE_CLIENT }}" >> frontend/.env
 
+      - name: Set VITE_SENTRY_DSN
+        run: echo "VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> frontend/.env
+
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
 

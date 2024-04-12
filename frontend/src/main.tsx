@@ -6,7 +6,7 @@ import './index.css';
 import { ENV } from './modules/env.ts';
 
 Sentry.init({
-  dsn: ENV.CENTRY_DSN,
+  dsn: ENV.SENTRY_DSN,
   integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
   // Performance Monitoring
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
