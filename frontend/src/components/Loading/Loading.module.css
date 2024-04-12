@@ -5,7 +5,8 @@
   align-items: center;
   gap: 20px;
   width: 100%;
-  height: 400px;
+  height: 400px; /* fallback */
+  height: calc(100svh - 115px);
 }
 .fill {
   position: absolute;
