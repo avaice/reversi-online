@@ -174,12 +174,12 @@ export const Game = () => {
           winner = 'white';
         }
         if (winner == 'draw') {
-          return 'ゲーム終了: 引き分け';
+          return `黒:${result.black} 白:${result.white} | 引き分け`;
         }
         if (winner === myColor) {
-          return 'ゲーム終了: あなたの勝ち';
+          return `黒:${result.black} 白:${result.white} | あなたの勝ち`;
         } else {
-          return 'ゲーム終了: あなたの負け';
+          return `黒:${result.black} 白:${result.white} | あなたの負け`;
         }
       }
       case 'leave':
@@ -243,6 +243,8 @@ export const Game = () => {
   if (gameState === 'refused') {
     return <Loading msg="ゲームから切断されました。再接続中.." />;
   }
+
+  console.log('gameData', gameData);
 
   return (
     <main>
