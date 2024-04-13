@@ -107,6 +107,7 @@ export const Game = () => {
     // 盤面の更新
     socket.on('board update', (data: GameDataType) => {
       if (gameState === 'playing' && isSoundEnabled) {
+        turnSound.current.currentTime = 0;
         turnSound.current.volume = 0.5;
         turnSound.current.play();
       }
