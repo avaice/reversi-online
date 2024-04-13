@@ -1,5 +1,5 @@
 import styles from './Game.module.css';
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { v4 } from 'uuid';
 import { Loading } from '../Loading/Loading';
 import { ReversiBoard } from './components/ReversiBoard';
@@ -28,7 +28,6 @@ export const Game = () => {
   const [gameState, setGameState] = useState<GameStateType>('init');
   const [gameData, setGameData] = useState<GameDataType | undefined>();
   const [result, setResult] = useState<{ black: number; white: number } | undefined>();
-  const turnSound = useRef(new Audio('/turn.mp3'));
   const [isSoundEnabled, setIsSoundEnabled] = useState(!localStorage.getItem('reversi_sound_mute'));
 
   const createRoom = useCallback((_roomId?: string) => {
@@ -107,9 +106,12 @@ export const Game = () => {
     // 盤面の更新
     socket.on('board update', (data: GameDataType) => {
       if (gameState === 'playing' && isSoundEnabled) {
-        turnSound.current.currentTime = 0;
-        turnSound.current.volume = 0.5;
-        turnSound.current.play();
+        // Safariで正しく音が鳴らない問題に対応した苦渋の策
+        const turnSound = new Audio('/turn.mp3');
+        turnSound.oncanplay = () => {
+          turnSound.volume = 0.5;
+          turnSound.play();
+        };
       }
       setGameState('playing');
       localStorage.setItem('playing_room', roomId!);
@@ -242,8 +244,6 @@ export const Game = () => {
   if (gameState === 'refused') {
     return <Loading msg="ゲームから切断されました。再接続中.." />;
   }
-
-  console.log('gameData', gameData);
 
   return (
     <main>
