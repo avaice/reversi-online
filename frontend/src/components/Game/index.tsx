@@ -1,5 +1,5 @@
 import styles from './Game.module.css';
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { v4 } from 'uuid';
 import { Loading } from '../Loading/Loading';
 import { ReversiBoard } from './components/ReversiBoard';
@@ -28,6 +28,10 @@ export const Game = () => {
   const [gameState, setGameState] = useState<GameStateType>('init');
   const [gameData, setGameData] = useState<GameDataType | undefined>();
   const [result, setResult] = useState<{ black: number; white: number } | undefined>();
+  const turnSound = useRef(new Audio('/turn.mp3'));
+  const [isSoundEnabled, setIsSoundEnabled] = useState(
+    !!(Number(localStorage.getItem('reversi_sound')) ?? true)
+  );
 
   const createRoom = useCallback((_roomId?: string) => {
     setRoomId(_roomId ?? v4());
@@ -104,6 +108,10 @@ export const Game = () => {
 
     // 盤面の更新
     socket.on('board update', (data: GameDataType) => {
+      if (gameState === 'playing' && isSoundEnabled) {
+        turnSound.current.volume = 0.5;
+        turnSound.current.play();
+      }
       setGameState('playing');
       localStorage.setItem('playing_room', roomId!);
       setGameData(data);
@@ -123,7 +131,7 @@ export const Game = () => {
         alert('置く場所があるので、パスできません');
       }
     });
-  }, [createRoom, gameState, roomId, socket]);
+  }, [createRoom, gameState, isSoundEnabled, roomId, socket]);
 
   const unDescribeEvents = useCallback(() => {
     if (!socket) {
@@ -251,13 +259,28 @@ export const Game = () => {
         <ReversiBoard gameData={gameData} myUserId={socket.id} onClickPiece={onClickPiece} />
         {gameState === 'disconnected' && <Loading msg="相手の通信が不安定です" fill />}
       </div>
-      <button
-        className={styles.passButton}
-        onClick={handlePass}
-        disabled={!(gameData?.user[gameData.turn] === socket.id)}
-      >
-        パスする
-      </button>
+      <div className={styles.controls}>
+        <button
+          className={styles.soundTrigger}
+          onClick={() => {
+            setIsSoundEnabled(!isSoundEnabled);
+            localStorage.setItem('reversi_sound', !isSoundEnabled ? '1' : '0');
+          }}
+        >
+          {isSoundEnabled ? (
+            <img src="/sound_on.svg" alt="音をオフにする" />
+          ) : (
+            <img src="/sound_off.svg" alt="音をオンにする" />
+          )}
+        </button>
+        <button
+          className={styles.passButton}
+          onClick={handlePass}
+          disabled={!(gameData?.user[gameData.turn] === socket.id)}
+        >
+          パスする
+        </button>
+      </div>
     </main>
   );
 };
