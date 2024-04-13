@@ -29,9 +29,7 @@ export const Game = () => {
   const [gameData, setGameData] = useState<GameDataType | undefined>();
   const [result, setResult] = useState<{ black: number; white: number } | undefined>();
   const turnSound = useRef(new Audio('/turn.mp3'));
-  const [isSoundEnabled, setIsSoundEnabled] = useState(
-    !!(Number(localStorage.getItem('reversi_sound')) ?? true)
-  );
+  const [isSoundEnabled, setIsSoundEnabled] = useState(!localStorage.getItem('reversi_sound_mute'));
 
   const createRoom = useCallback((_roomId?: string) => {
     setRoomId(_roomId ?? v4());
@@ -265,8 +263,13 @@ export const Game = () => {
         <button
           className={styles.soundTrigger}
           onClick={() => {
-            setIsSoundEnabled(!isSoundEnabled);
-            localStorage.setItem('reversi_sound', !isSoundEnabled ? '1' : '0');
+            const newValue = !isSoundEnabled;
+            setIsSoundEnabled(newValue);
+            if (newValue) {
+              localStorage.removeItem('reversi_sound_mute');
+            } else {
+              localStorage.setItem('reversi_sound_mute', '1');
+            }
           }}
         >
           {isSoundEnabled ? (
