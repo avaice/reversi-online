@@ -17,7 +17,7 @@ export const initIoEvents = (io: Server) => {
   io.on('connection', (socket) => {
     // ルームに入室する
     socket.on('join room', (roomId) => {
-      serverLog(`join room: ${roomId}`);
+      serverLog(`join room: ${socket.id}(${socket.handshake.address}) to ${roomId}`);
       // もし部屋に２名以上いたら入室できない
       const room = io.sockets.adapter.rooms.get(roomId);
       if (room && room.size >= 2) {
@@ -75,6 +75,7 @@ export const initIoEvents = (io: Server) => {
           (!reversi.hasPuttablePlace('black') && !reversi.hasPuttablePlace('white'))
         ) {
           io.to(roomId).emit('result', reversi.count());
+          serverLog(`game end: ${roomId}`);
         }
       } else {
         socket.emit('message', "can't put piece");
