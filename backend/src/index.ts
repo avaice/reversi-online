@@ -26,6 +26,12 @@ app.get('/', (req, res) => {
   res.send('Online Reversi Server');
 });
 
+// インデックス登録を防ぐ
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send('User-agent: *\nDisallow: /');
+});
+
 app.use('/ping', cors());
 app.get('/ping', (req, res) => {
   res.send('pong');
