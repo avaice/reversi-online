@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { io } from 'socket.io-client';
-import { ENV } from '../env';
+import { ENV } from './env';
 
 export const useRoomConnection = (roomId?: string) => {
   const SOCKET_URL = ENV.SOCKET_URL;
