@@ -1,3 +1,8 @@
+.game {
+  margin: 20px 0;
+  min-height: calc(100svh - 115px);
+}
+
 .information {
   margin: 5px 0;
   font-weight: bold;
