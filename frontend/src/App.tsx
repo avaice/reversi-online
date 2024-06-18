@@ -1,7 +1,9 @@
 import { Game } from './components/Game';
+import { useModeSelect } from './components/ModeSelect';
 import { ENV } from './modules/env';
 
 function App() {
+  const { playMode, selectUi } = useModeSelect();
   return (
     <>
       <header>
@@ -9,8 +11,8 @@ function App() {
           <img src="/logo.png" alt="オンラインリバーシ" width="250px" />
         </h1>
       </header>
-      <Game />
-      <div>
+      {playMode ? <Game playMode={playMode} /> : <div>{selectUi}</div>}
+      {/* <div>
         <section>
           <h2>友達とプレイする方法</h2>
           <p>まず、招待リンクをコピーしてください。</p>
@@ -34,7 +36,7 @@ function App() {
             を参照してください。
           </p>
         </section>
-      </div>
+      </div> */}
       <footer>
         {ENV.DEV_MODE ? <p>Development Mode</p> : <p>Build Date: {ENV.BUILD_DATE}</p>}
         <p>(C)2024 online-reversi.xyz all rights reserved.</p>
