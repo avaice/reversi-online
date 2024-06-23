@@ -1,5 +1,5 @@
 type PieceType = 'black' | 'white' | null;
-type UserType = { black: string; white: string };
+type UserType = { black: string; white: string | null };
 
 const newBoard = () => {
   const board: PieceType[][] = Array.from({ length: 8 }, () => Array(8).fill(null));
@@ -60,7 +60,7 @@ export class Reversi {
     if (
       this.board[y][x] !== null ||
       this.user === null ||
-      this.canPutPiece(x, y, this.turn === 'black' ? 'black' : 'white') === false
+      this.canPutPiece(x, y, this.turn === 'black' ? 'black' : 'white') === 0
     ) {
       return false;
     }
@@ -70,12 +70,14 @@ export class Reversi {
     return true;
   }
 
-  canPutPiece(x: number, y: number, color: 'black' | 'white') {
+  canPutPiece(x: number, y: number, color: 'black' | 'white'): number {
     if (this.board[y][x] !== null) {
-      return false;
+      return 0;
     }
+
     const dx = [0, 1, 1, 1, 0, -1, -1, -1];
     const dy = [-1, -1, 0, 1, 1, 1, 0, -1];
+    let count = 0;
     for (let i = 0; i < 8; i++) {
       let nx = x + dx[i];
       let ny = y + dy[i];
@@ -86,7 +88,8 @@ export class Reversi {
         }
         if (this.board[ny][nx] === color) {
           if (flag) {
-            return true;
+            count++;
+            break;
           }
           break;
         }
@@ -95,7 +98,8 @@ export class Reversi {
         ny += dy[i];
       }
     }
-    return false;
+
+    return count;
   }
 
   turnOver(x: number, y: number, color: 'black' | 'white') {

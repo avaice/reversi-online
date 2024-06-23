@@ -43,10 +43,14 @@
   text-align: center;
 }
 
-.replay {
+.linkLikeButton {
   margin-left: 5px;
   color: blue;
   text-decoration: underline;
+}
+.linkLikeButton:hover {
+  cursor: pointer;
+  color: rgb(0, 0, 161);
 }
 
 .reversiBoardWrapper {

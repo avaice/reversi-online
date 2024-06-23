@@ -22,7 +22,7 @@ const getShareLink = (roomId: string) => {
   return url.toString();
 };
 
-export const Game = () => {
+export const Game = ({ playMode }: { playMode: 'single' | 'multi' }) => {
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
   const socket = useRoomConnection(roomId);
   const [gameState, setGameState] = useState<GameStateType>('init');
@@ -87,7 +87,11 @@ export const Game = () => {
     // 入室時の処理
     socket.on('joined room', (roomId: string) => {
       printLog(`joined room: ${roomId}`);
-      setGameState('matchmaking');
+      if (playMode === 'multi') {
+        setGameState('matchmaking');
+      } else {
+        socket.emit('start single play');
+      }
     });
     // 満室時の処理
     socket.on('full room', () => {
@@ -131,7 +135,7 @@ export const Game = () => {
         alert('置く場所があるので、パスできません');
       }
     });
-  }, [createRoom, gameState, isSoundEnabled, roomId, socket]);
+  }, [createRoom, gameState, isSoundEnabled, playMode, roomId, socket]);
 
   const unDescribeEvents = useCallback(() => {
     if (!socket) {
@@ -159,7 +163,7 @@ export const Game = () => {
         if (gameData?.user[gameData.turn] === socket.id) {
           return `あなたのターン(${turn})です`;
         }
-        return `相手のターン(${turn})です`;
+        return `${playMode === 'multi' ? '相手' : 'コンピューター'}のターン(${turn})です`;
       }
       case 'done': {
         if (!result) {
@@ -185,7 +189,7 @@ export const Game = () => {
       case 'leave':
         return '相手が退室しました';
     }
-  }, [gameData?.turn, gameData?.user, gameState, result, socket]);
+  }, [gameData, gameState, playMode, result, socket]);
 
   useEffect(() => {
     if (!roomId) {
@@ -244,7 +248,7 @@ export const Game = () => {
     return <Loading msg="ゲームから切断されました。再接続中.." />;
   }
 
-  console.log('gameData', gameData);
+  // console.log('gameData', gameData);
 
   return (
     <div className={styles.game}>
@@ -252,8 +256,18 @@ export const Game = () => {
       <p className={styles.information} aria-live="polite">
         {gameInformation}
         {gameState === 'done' && (
-          <button className={styles.replay} onClick={handleReplay}>
+          <button className={styles.linkLikeButton} onClick={handleReplay}>
             再戦する
+          </button>
+        )}
+        {gameState === 'matchmaking' && (
+          <button
+            className={styles.linkLikeButton}
+            onClick={() => {
+              location.href = getShareLink(roomId);
+            }}
+          >
+            再読込
           </button>
         )}
       </p>
@@ -283,7 +297,7 @@ export const Game = () => {
         <button
           className={styles.passButton}
           onClick={handlePass}
-          disabled={!(gameData?.user[gameData.turn] === socket.id)}
+          disabled={!(gameData?.user[gameData.turn] === socket.id && gameState === 'playing')}
         >
           パスする
         </button>
