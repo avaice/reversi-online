@@ -13,6 +13,35 @@ export const initIoEvents = (io: Server) => {
       user: reversi.getUser(),
       turn: reversi.getTurn(),
     });
+
+    const isEnd = () => {
+      const flatBoard = reversi.getBoard().flat();
+      if (
+        flatBoard.filter((piece) => piece === null).length === 0 ||
+        flatBoard.filter((piece) => piece === 'black').length === 0 ||
+        flatBoard.filter((piece) => piece === 'white').length === 0 ||
+        (!reversi.hasPuttablePlace('black') && !reversi.hasPuttablePlace('white'))
+      ) {
+        io.to(roomId).emit('result', reversi.count());
+        serverLog(`game end: ${roomId}`);
+      }
+    };
+
+    if (reversi.getUser()?.white === null && reversi.getTurn() === 'white') {
+      (async () => {
+        const cpuPutPos = await cpuTurn(reversi, 'minmax', 'white');
+        if (!cpuPutPos) {
+          reversi.pass();
+        } else {
+          reversi.putPiece(cpuPutPos.x, cpuPutPos.y);
+        }
+
+        setTimeout(() => {
+          sendBoard(roomId, reversi);
+          isEnd();
+        }, 100);
+      })();
+    }
   };
 
   io.on('connection', (socket) => {
@@ -95,36 +124,7 @@ export const initIoEvents = (io: Server) => {
       }
 
       if (reversi.putPiece(x, y)) {
-        const isEnd = () => {
-          const flatBoard = reversi.getBoard().flat();
-          if (
-            flatBoard.filter((piece) => piece === null).length === 0 ||
-            flatBoard.filter((piece) => piece === 'black').length === 0 ||
-            flatBoard.filter((piece) => piece === 'white').length === 0 ||
-            (!reversi.hasPuttablePlace('black') && !reversi.hasPuttablePlace('white'))
-          ) {
-            io.to(roomId).emit('result', reversi.count());
-            serverLog(`game end: ${roomId}`);
-          }
-        };
         sendBoard(roomId, reversi);
-        isEnd();
-
-        if (reversi.getUser()?.white === null) {
-          (async () => {
-            const cpuPutPos = await cpuTurn(reversi, 'minmax', 'white');
-            if (!cpuPutPos) {
-              reversi.pass();
-            } else {
-              reversi.putPiece(cpuPutPos.x, cpuPutPos.y);
-            }
-
-            setTimeout(() => {
-              sendBoard(roomId, reversi);
-              isEnd();
-            }, 200);
-          })();
-        }
       } else {
         socket.emit('message', "can't put piece");
       }
