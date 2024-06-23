@@ -3,7 +3,10 @@ import styles from './ModeSelect.module.css';
 import { ReversiBoard } from '../Game/components/ReversiBoard';
 
 export const useModeSelect = () => {
-  const [playMode, setPlayMode] = useState<'single' | 'multi' | null>(null);
+  const searchParams = new URLSearchParams(window.location.search);
+  const [playMode, setPlayMode] = useState<'single' | 'multi' | null>(
+    searchParams.get('roomId') ? 'multi' : null
+  );
   const selectUi = (
     <div className={styles.selector}>
       <h2>ゲームモードを選択！</h2>

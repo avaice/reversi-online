@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import { Reversi } from './classes/Reversi';
 import { serverLog } from './serverLog';
+import { cpuTurn } from './cpu';
 
 const joinedRoomList = new Map<string, string>();
 export const BoardList = new Map<string, Reversi>();
@@ -55,27 +56,74 @@ export const initIoEvents = (io: Server) => {
         }
       }
     });
+
+    // シングルプレイ
+    socket.on('start single play', () => {
+      const roomId = joinedRoomList.get(socket.id);
+      if (!roomId) {
+        serverLog('single: roomId is not found');
+        return;
+      }
+
+      serverLog('start single play');
+
+      if (!BoardList.has(roomId)) {
+        const reversi = new Reversi({
+          black: socket.id,
+          white: null,
+        });
+        BoardList.set(roomId, reversi);
+        sendBoard(roomId, reversi);
+        serverLog(`create board: ${roomId}`);
+      } else {
+        const reversi = BoardList.get(roomId)!;
+        sendBoard(roomId, reversi);
+        serverLog(`resume game: ${roomId}`);
+      }
+    });
+
     // ピースを置く
     socket.on('put piece', ({ x, y }: { x: number; y: number }) => {
       const roomId = joinedRoomList.get(socket.id);
       if (!roomId) {
         return;
       }
+      console.log('roomId', roomId);
       const reversi = BoardList.get(roomId);
       if (!reversi) {
         return;
       }
+
       if (reversi.putPiece(x, y)) {
+        const isEnd = () => {
+          const flatBoard = reversi.getBoard().flat();
+          if (
+            flatBoard.filter((piece) => piece === null).length === 0 ||
+            flatBoard.filter((piece) => piece === 'black').length === 0 ||
+            flatBoard.filter((piece) => piece === 'white').length === 0 ||
+            (!reversi.hasPuttablePlace('black') && !reversi.hasPuttablePlace('white'))
+          ) {
+            io.to(roomId).emit('result', reversi.count());
+            serverLog(`game end: ${roomId}`);
+          }
+        };
         sendBoard(roomId, reversi);
-        const flatBoard = reversi.getBoard().flat();
-        if (
-          flatBoard.filter((piece) => piece === null).length === 0 ||
-          flatBoard.filter((piece) => piece === 'black').length === 0 ||
-          flatBoard.filter((piece) => piece === 'white').length === 0 ||
-          (!reversi.hasPuttablePlace('black') && !reversi.hasPuttablePlace('white'))
-        ) {
-          io.to(roomId).emit('result', reversi.count());
-          serverLog(`game end: ${roomId}`);
+        isEnd();
+
+        if (reversi.getUser()?.white === null) {
+          (async () => {
+            const cpuPutPos = await cpuTurn(reversi, 'minmax', 'white');
+            if (!cpuPutPos) {
+              reversi.pass();
+            } else {
+              reversi.putPiece(cpuPutPos.x, cpuPutPos.y);
+            }
+
+            setTimeout(() => {
+              sendBoard(roomId, reversi);
+              isEnd();
+            }, 200);
+          })();
         }
       } else {
         socket.emit('message', "can't put piece");
