@@ -1,5 +1,21 @@
+import { ENV } from '../../modules/env';
+
 type PieceType = 'black' | 'white' | null;
 type UserType = { black: string; white: string | null };
+
+const mockBoard = () => {
+  const board: PieceType[][] = Array.from({ length: 8 }, () => Array(8).fill(null));
+  for (let x = 0; x < 8; x++) {
+    for (let y = 0; y < 8; y++) {
+      board[y][x] = Math.random() < 0.5 ? 'black' : 'white';
+    }
+  }
+  board[0][0] = null;
+  board[3][4] = null;
+  board[7][7] = null;
+  board[4][3] = null;
+  return board;
+};
 
 const newBoard = () => {
   const board: PieceType[][] = Array.from({ length: 8 }, () => Array(8).fill(null));
@@ -11,7 +27,7 @@ const newBoard = () => {
 };
 
 export class Reversi {
-  private board = newBoard();
+  private board = ENV.DEV ? mockBoard() : newBoard();
   private user: UserType | null = null;
   private turn: 'black' | 'white' = 'black';
 
