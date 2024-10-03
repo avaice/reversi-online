@@ -41,6 +41,8 @@ export const initIoEvents = (io: Server) => {
           isEnd();
         }, 100);
       })();
+    } else {
+      isEnd();
     }
   };
 
@@ -117,7 +119,7 @@ export const initIoEvents = (io: Server) => {
       if (!roomId) {
         return;
       }
-      console.log('roomId', roomId);
+      // console.log('roomId', roomId);
       const reversi = BoardList.get(roomId);
       if (!reversi) {
         return;
