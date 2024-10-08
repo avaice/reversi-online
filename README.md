@@ -4,6 +4,10 @@ Simple Online Reversi Game made with Socket.IO !
 
 https://online-reversi.xyz/
 
+## View Stats
+
+https://stats.online-reversi.xyz/
+
 ## Frontend
 
 Vite + React + TypeScript
